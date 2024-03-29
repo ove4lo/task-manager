@@ -11,5 +11,5 @@ npm start
 
 Второй:
 cd frontend
-npm install react-scripts
+npm install
 npm start
