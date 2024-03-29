@@ -9,11 +9,12 @@ import GoButton from '../components/GoButton';
 const MainPage: React.FC = () => {
   const [tasks, setTasks] = useState<ITask[]>([]);
   const [fetching, setFetching] = useState(true);
+  const [totalCount, setTotalCount] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
 
   /*для пагинации*/
   const scrollHandler = () => {
-    if (document.documentElement.scrollHeight - (document.documentElement.scrollTop + window.innerHeight) < 100) {
+    if (document.documentElement.scrollHeight - (document.documentElement.scrollTop + window.innerHeight) < 100 && tasks.length < totalCount ) {
       setFetching(true);
     }
   }
@@ -29,13 +30,13 @@ const MainPage: React.FC = () => {
     if (fetching) {
       axios.get(`http://localhost:3001/tasks?page=${currentPage}`) //запрос на сервер для получения всех задач
         .then((res) => {
-          setTasks([...tasks, ...res.data]);
-          setCurrentPage(prevState => prevState + 1);
+          setTotalCount(res.data.totalCount);
+          setTasks([...tasks, ...res.data.tasks]);
+          setCurrentPage(prevState => prevState + 1);          
         })
         .finally(() => setFetching(false));
     }
   }, [fetching, currentPage]);
-
 
   const handleSortChange = async (sortType: string) => {
     try {

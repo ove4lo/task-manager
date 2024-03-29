@@ -13,42 +13,53 @@ const db = mysql.createConnection({ //подключение к бд
   database: "manageroftasks",
 });
 
-app.get("/tasks", (req, res) => { //запрос на все задачи
-  //для пагинации
-  const page = req.query.page || 1;
-  let limit = req.query.limit || 5;
+app.get("/tasks", (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  let limit = parseInt(req.query.limit) || 5;
   const offset = (page - 1) * limit;
 
-  limit = parseInt(limit, 15);
+  limit = parseInt(limit, 10);
 
-  const q = `
-    SELECT task.*, 
-    GROUP_CONCAT(mark.type) AS marks 
-    FROM manageroftasks.task 
-    LEFT JOIN manageroftasks.mark 
-    ON task.id = mark.task_id 
-    GROUP BY task.id 
-    ORDER BY task.dateofcreation 
-    DESC
-    LIMIT ? OFFSET ?`;
+  const qTotalCount = `SELECT COUNT(*) AS totalCount FROM manageroftasks.task`;
 
-  db.query(q, [limit, offset], (err, data) => {
+  db.query(qTotalCount, (err, result) => {
     if (err) {
       console.log(err);
       return res.status(500).json({ error: err.message });
     }
 
-    data.forEach(task => { //отметки в виде массива
-      if (task.marks) {
-        task.marks = task.marks.split(',');
-      } else {
-        task.marks = [];
-      }
-    });
+    const totalCount = result[0].totalCount;
 
-    return res.json(data);
+    const qTasks = `
+      SELECT task.*, 
+      GROUP_CONCAT(mark.type) AS marks 
+      FROM manageroftasks.task 
+      LEFT JOIN manageroftasks.mark 
+      ON task.id = mark.task_id 
+      GROUP BY task.id 
+      ORDER BY task.dateofcreation 
+      DESC
+      LIMIT ? OFFSET ?`;
+
+    db.query(qTasks, [limit, offset], (err, data) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ error: err.message });
+      }
+
+      data.forEach(task => {
+        if (task.marks) {
+          task.marks = task.marks.split(',');
+        } else {
+          task.marks = [];
+        }
+      });
+
+      return res.json({ tasks: data, totalCount: totalCount });
+    });
   });
 });
+
 
 
 app.get("/sort", (req, res) => { //запрос на сортировку задач, по дефолту стоит от новых к старым
