@@ -13,12 +13,14 @@ const db = mysql.createConnection({ //подключение к бд
   database: "manageroftasks",
 });
 
-app.get("/tasks", (req, res) => {
+app.get("/tasks", (req, res) => { //получение всех задач и их количество
+
+  //для пагинации
   const page = parseInt(req.query.page) || 1;
   let limit = parseInt(req.query.limit) || 5;
   const offset = (page - 1) * limit;
 
-  limit = parseInt(limit, 10);
+  limit = parseInt(limit, 15); //лимит для загрузки - 15
 
   const qTotalCount = `SELECT COUNT(*) AS totalCount FROM manageroftasks.task`;
 
@@ -59,7 +61,6 @@ app.get("/tasks", (req, res) => {
     });
   });
 });
-
 
 
 app.get("/sort", (req, res) => { //запрос на сортировку задач, по дефолту стоит от новых к старым
