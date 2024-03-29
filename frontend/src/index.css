@@ -362,7 +362,6 @@ body {
   }
   
   .task-list {
-    display: block;
     max-width: 100%;
     margin-left: 20px;
   }
@@ -376,6 +375,14 @@ body {
 
   .title {
     font-size: 30px;
+  }
+
+  .task h3 {
+    font-size: 15px;
+  }
+
+  .task p {
+    font-size: 10px;
   }
 
   .task .marks {

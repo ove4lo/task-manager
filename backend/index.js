@@ -19,7 +19,7 @@ app.get("/tasks", (req, res) => { //запрос на все задачи
   let limit = req.query.limit || 5;
   const offset = (page - 1) * limit;
 
-  limit = parseInt(limit, 10);
+  limit = parseInt(limit, 15);
 
   const q = `
     SELECT task.*, 

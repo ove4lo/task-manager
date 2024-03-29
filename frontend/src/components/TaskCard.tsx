@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { ITask } from "../models/models";
 
+
 /*карточка задачи*/
 /*передаем данные и при нажатии на карточку товара переходим на ее просмотр*/
 const TaskCard: React.FC<ITask> = ({ id, name, description, dateofcreation, priority, marks }) => {
